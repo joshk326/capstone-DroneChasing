@@ -19,12 +19,18 @@ async def move_right(system, distance):
     target_position = current_position.translate(distance, 0.0, 0.0)
     await system.offboard.set_position_ned(target_position)
 
-# Connect to the drone
-drone = System()
-await drone.connect(system_address="udp://DRONE_IP:PORT")
 
-# Move the drone forward by 5 meters
-await move_forward(drone, 5.0)
+async def main():
+    # Connect to the drone
+    drone = System()
+    await drone.connect(system_address="udp://DRONE_IP:PORT")
 
-# Move the drone to the right by 3 meters
-await move_right(drone, 3.0)
+    # Move the drone forward by 5 meters
+    await move_forward(drone, 5.0)
+
+    # Move the drone to the right by 3 meters
+    await move_right(drone, 3.0)
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
