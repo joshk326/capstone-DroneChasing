@@ -37,26 +37,24 @@ while True:
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     
-    # Check if at least one face is detected
+    # Check if at least one object with that color is detected
     if len(contours) > 0:
         if not object_detected:
             largest_contour = max(contours, key=cv2.contourArea)
             x, y, w, h = cv2.boundingRect(largest_contour)
             object_detected = True
-        # If the object has been detected before, track the largest detected object
+        # If the object has been detected before, track the largest detected object with that color
         else:
             largest_contour = max(contours, key=cv2.contourArea)
             x, y, w, h = cv2.boundingRect(largest_contour)
-        # # Track the first detected face
-        # x, y, w, h = faces[0]
-
-    # Print the coordinates of the tracked face
+        
+    # Print the coordinates of the tracked color
     print(f"Coordinates of the tracked red object: x={x}, y={y}, width={w}, height={h}")
 
-    # Draw a rectangle around the tracked face (for visualization purposes only)
+    # Draw a rectangle around the tracked color (for visualization purposes only)
     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-    # Display the output frame with the tracked face
+    # Display the output frame with the tracked color
     cv2.imshow('Tracked Object', frame)
 
     # Wait for a key press and check if it's the 'q' key to exit
