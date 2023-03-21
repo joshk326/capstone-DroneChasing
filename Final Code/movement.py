@@ -28,24 +28,24 @@ class Drone():
 			await self.drone_sys.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, 0.0, 0.0))
 			
 			await self.start_offboard()
-		except:
-			print("Error connecting drone")
-			return
+			return True
+		except Exception as e:
+			print("Drone connection failed with error: " + str(e))	
+			return False
 	async def disconnect(self):
-		async for position_ned in self.drone_sys.telemetry.position_velocity_ned():
-			if position_ned.position.down_m < 0.1:
-				print("-- Drone is on the ground")
+		_, _ , alt = await self.get_position()
+		if(alt > 0.01):
+			print("-- Drone is still in the air")
+			if(await self.land()):
 				await self.stop_offboard()
 				await self.drone_sys.action.disarm()
-				break
-			else:
-				print("-- Drone is still in the air")
-				await self.land()
-				await self.stop_offboard()
-				await self.drone_sys.action.disarm()
-				break
+				print("\n-- Disconnected")
+		else:
+			await self.stop_offboard()
+			await self.drone_sys.action.disarm()
+			print("\n-- Disconnected")
 	async def start_offboard(self):
-		print("-- Starting offboard")
+		print("-- Starting offboard\n")
 		try:
 			await self.drone_sys.offboard.start()
 			await asyncio.sleep(2)
