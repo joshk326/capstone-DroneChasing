@@ -7,6 +7,7 @@ class Drone():
 	def __init__(self, ip):
 		self.ip = ip
 		self.drone_sys = System()
+		
 	async def connect(self):
 		try:	
 			await self.drone_sys.connect(system_address="udp://"+self.ip+":14540")
@@ -32,6 +33,7 @@ class Drone():
 		except Exception as e:
 			print("Drone connection failed with error: " + str(e))	
 			return False
+		
 	async def disconnect(self):
 		_, _ , alt = await self.get_position()
 		if(alt > 0.01):
@@ -44,6 +46,7 @@ class Drone():
 			await self.stop_offboard()
 			await self.drone_sys.action.disarm()
 			print("\n-- Disconnected")
+
 	async def start_offboard(self):
 		print("-- Starting offboard\n")
 		try:
@@ -54,21 +57,33 @@ class Drone():
 			print("-- Disarming")
 			await self.drone_sys.action.disarm()
 			return
+		
+	async def get_offboard_state(self):
+		try: 
+			return await self.drone_sys.offboard.is_active()
+		except OffboardError as error:
+			print(f"Could not get offboard state with error: {error._result.result}")
+
 	async def stop_offboard(self):
 		print("-- Stopping offboard")
 		try:
 			await self.drone_sys.offboard.stop()
 		except OffboardError as error:
 			print(f"Stopping offboard mode failed with error code: {error._result.result}")
+
+	#local to the drone
 	async def get_position(self):
 		async for position_ned in self.drone_sys.telemetry.position_velocity_ned():
 			return position_ned.position.north_m, position_ned.position.east_m, position_ned.position.down_m
+		
+	#actual longitude and latitude
 	async def get_location(self):
 		async for position in self.drone_sys.telemetry.position():
 			latitude = position.latitude_deg
 			longitude = position.longitude_deg
 			absolute_altitude = position.absolute_altitude_m
 			return latitude, longitude, absolute_altitude
+		
 	async def forward(self, distance, sleep_t):
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
@@ -77,6 +92,7 @@ class Drone():
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
+
 	async def backward(self, distance, sleep_t):
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
@@ -85,6 +101,7 @@ class Drone():
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
+
 	async def right(self, distance, sleep_t):
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
@@ -93,6 +110,7 @@ class Drone():
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
+
 	async def left(self, distance, sleep_t):
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
@@ -101,6 +119,7 @@ class Drone():
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
+
 	async def up(self, distance, sleep_t):
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
@@ -109,6 +128,7 @@ class Drone():
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
+
 	async def down(self, distance, sleep_t):
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
@@ -117,6 +137,7 @@ class Drone():
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
+
 	async def takeoff(self, altitude=5.0):
 		if(isinstance(altitude, float)):
 			print("-- Taking off to an altitude of: " + str(altitude) +"m")
@@ -125,6 +146,7 @@ class Drone():
 			await asyncio.sleep(10)
 		else:
 			print("altitude must be a float")
+
 	async def land(self):
 		print("-- Landing")
 		await self.drone_sys.action.land()
