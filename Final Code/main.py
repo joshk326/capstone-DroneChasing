@@ -22,7 +22,7 @@ async def run():
 	while(await drone.get_offboard_state() == True and vision.cap.isOpened()):
 		vision.detect_color()
 
-		if(vision.object_is_detected() and detectedObj.check_config_status() == False):
+		if(vision.object_is_detected() and detectedObj.check_detected_status() == False):
 			detectedObj.set_config(vision.get_frame_area(), coordinate_thresh, area_thresh)
 
 		elif(vision.object_is_detected() and detectedObj.check_detected_status() == True):
