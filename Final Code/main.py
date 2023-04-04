@@ -21,38 +21,47 @@ async def run():
 
 	while(await drone.get_offboard_state() == True and vision.cap.isOpened()):
 		vision.detect_color()
-
+		area = vision.get_box_area()
+		box_dim = vision.get_box_dimenstions()
 		if(vision.object_is_detected() and detectedObj.check_detected_status() == False):
-			detectedObj.set_config(vision.get_frame_area(), coordinate_thresh, area_thresh)
-
+			#detectedObj.set_config(vision.get_box_area(), coordinate_thresh, area_thresh)
+			detectedObj.update_detected_status(True)
+			detectedObj.set_config(area, box_dim, coordinate_thresh, area_thresh)
+			print("-- Object Detected")
 		elif(vision.object_is_detected() and detectedObj.check_detected_status() == True):
 			# Handle x-axis/y-axis movements
-
+			print(detectedObj.get_intial_area())
+			
 			coordinates = vision.get_object_coordinates()
 
-			if(coordinates[0] > -detectedObj.coordinate_thresh):
-				await drone.right(5.0, 4)
+			# if(coordinates[0] > -detectedObj.coordinate_thresh):
+			# 	await drone.right(5.0, 4.0)
 
-			elif(coordinates[0] < detectedObj.coordinate_thresh):
-				await drone.left(5.0, 4)
+			# elif(coordinates[0] < detectedObj.coordinate_thresh):
+			# 	await drone.left(5.0, 4.0)
 
-			elif(coordinates[1] > detectedObj.coordinate_thresh):
-				await drone.up(5.0, 4)
+			# elif(coordinates[1] > detectedObj.coordinate_thresh):
+			# 	await drone.up(5.0, 4.0)
 
-			elif(coordinates[1] < -detectedObj.coordinate_thresh):
-				await drone.down(5.0, 4)
+			# elif(coordinates[1] < -detectedObj.coordinate_thresh):
+			# 	await drone.down(5.0, 4.0)
 
 			# Handle z-axis movements
 
-			frame_area = vision.get_frame_area()
+			frame_area = vision.get_box_area()
 
-			if(frame_area > detectedObj.initial_frame_area + detectedObj.area_thresh):
-				await drone.backward(5.0, 4)
+			# if(get_box_area > detectedObj.initial_frame_area + detectedObj.area_thresh):
+			# 	await drone.backward(5.0, 4.0)
 
-			elif(frame_area < detectedObj.initial_frame_area - detectedObj.area_thresh):
-				await drone.forward(5.0, 4)
+			# elif(get_box_area < detectedObj.initial_frame_area - detectedObj.area_thresh):
+			# 	await drone.forward(5.0, 4.0)
 
-	await vision.stop_all_detection()
+			if cv2.waitKey(25) & 0xFF == ord('q'):
+				break
+
+		
+
+	vision.stop_all_detection()
 
 	await drone.land()
 
