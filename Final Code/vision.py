@@ -37,9 +37,12 @@ class Vision():
 	def get_object_coordinates(self):
 		return (self.x_diff, self.y_diff)
 	
-	def get_frame_area(self):
-		return (self._w * self._h)
+	def get_box_dimenstions(self):
+		return [self._w, self._h]
 	
+	def get_box_area(self):
+		return self._w * self._h
+
 	def object_is_detected(self):
 		return self.object_detected
 	
