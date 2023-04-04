@@ -16,5 +16,9 @@ class ObjectConfig():
         return self.area_thresh
     def get_intial_area(self):
         return self.initial_frame_area
+    def get_coordinate_thresh(self):
+        return self.coordinate_thresh
+    def get_intial_box_dimensions(self):
+        return self.intial_box_dimensions
     def update_detected_status(self, status):
         self.detected = status
