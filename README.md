@@ -1,4 +1,4 @@
-CSE Capstone - Catch Me If You Can
+CSE Capstone - Catch Me If You Can (Drone Chasing)
 
 - There are two "main" branches -- main & develop.
 - git checkout the develop branch before making your feature branch.
