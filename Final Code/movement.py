@@ -88,7 +88,9 @@ class Drone():
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
 			await self.drone_sys.offboard.set_position_ned(PositionNedYaw(current_position[0] + distance, current_position[1], current_position[2], 0.0))
-			print("-- Going forward: " + str(distance) + "m")
+			#print distance with 4 decimal places
+			print("-- Going forward: " + str(round(distance, 4)) + "m")
+			# print("-- Going forward: " + str(distance) + "m")
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
@@ -97,7 +99,7 @@ class Drone():
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
 			await self.drone_sys.offboard.set_position_ned(PositionNedYaw(current_position[0] - distance, current_position[1], current_position[2], 0.0))
-			print("-- Going backwards: " + str(distance) + "m")
+			print("-- Going backwards: " + str(round(distance, 4)) + "m")
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
@@ -106,7 +108,7 @@ class Drone():
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
 			await self.drone_sys.offboard.set_position_ned(PositionNedYaw(current_position[0], current_position[1] + distance, current_position[2], 0.0))
-			print("-- Going right: " + str(distance) + "m")
+			print("-- Going right: " + str(round(distance, 4)) + "m")
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
@@ -115,7 +117,7 @@ class Drone():
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
 			await self.drone_sys.offboard.set_position_ned(PositionNedYaw(current_position[0], current_position[1] - distance, current_position[2], 0.0))
-			print("-- Going left: " + str(distance) + "m")
+			print("-- Going left: " + str(round(distance, 4)) + "m")
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
@@ -124,7 +126,7 @@ class Drone():
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
 			await self.drone_sys.offboard.set_position_ned(PositionNedYaw(current_position[0], current_position[1], current_position[2] - distance, 0.0))
-			print("-- Going up: " + str(distance) + "m")
+			print("-- Going up: " + str(round(distance, 4)) + "m")
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
@@ -133,7 +135,7 @@ class Drone():
 		if(isinstance(distance, float) and isinstance(sleep_t, float)):
 			current_position = await self.get_position()
 			await self.drone_sys.offboard.set_position_ned(PositionNedYaw(current_position[0], current_position[1], current_position[2] + distance, 0.0))
-			print("-- Going down: " + str(distance) + "m")
+			print("-- Going down: " + str(round(distance, 4)) + "m")
 			await asyncio.sleep(sleep_t)
 		else:
 			print("distance and sleep must be a float")
