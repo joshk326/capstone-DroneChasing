@@ -2,7 +2,9 @@
 from movement import Drone, asyncio
 from vision import Vision
 from object_config import ObjectConfig
+from threading import Thread
 import cv2
+
 
 ''' This will me the main file ran combining both our movement and vision code '''
 
@@ -17,50 +19,46 @@ async def run():
 	if(await drone.connect() == False):
 		return
 
-	await drone.takeoff()
+	await drone.takeoff(altitude=1.0)
+	
+	vision_thread = Thread(target=vision.detect_color)
+	vision_thread.start()
 
-	while(await drone.get_offboard_state() == True and vision.cap.isOpened()):
-		vision.detect_color()
+	while(await drone.get_offboard_state() == True and vision.is_detecting):
 		area = vision.get_box_area()
 		box_dim = vision.get_box_dimenstions()
 		if(vision.object_is_detected() and detectedObj.check_detected_status() == False):
-			#detectedObj.set_config(vision.get_box_area(), coordinate_thresh, area_thresh)
 			detectedObj.update_detected_status(True)
 			detectedObj.set_config(area, box_dim, coordinate_thresh, area_thresh)
-			print("-- Object Detected")
+			print("\n-- Object Detected\n")
 		elif(vision.object_is_detected() and detectedObj.check_detected_status() == True):
-			# Handle x-axis/y-axis movements
-			print(detectedObj.get_intial_area())
+			#print(detectedObj.get_intial_area())
 			
 			coordinates = vision.get_object_coordinates()
+			#print(coordinates)
 
-			# if(coordinates[0] > -detectedObj.coordinate_thresh):
-			# 	await drone.right(5.0, 4.0)
+			diff = vision.get_center_diff()
+			move_x = vision.convert_px_to_m(abs(diff[0]))
+			move_y = vision.convert_px_to_m(abs(diff[1]))
 
-			# elif(coordinates[0] < detectedObj.coordinate_thresh):
-			# 	await drone.left(5.0, 4.0)
-
-			# elif(coordinates[1] > detectedObj.coordinate_thresh):
-			# 	await drone.up(5.0, 4.0)
-
-			# elif(coordinates[1] < -detectedObj.coordinate_thresh):
-			# 	await drone.down(5.0, 4.0)
-
-			# Handle z-axis movements
+			if coordinates[0] < detectedObj.coordinate_thresh:
+				await drone.left(move_x, 1.0)
+			elif coordinates[0] > -detectedObj.coordinate_thresh:
+				await drone.right(move_x, 1.0)
+			if coordinates[1] < -detectedObj.coordinate_thresh:
+				await drone.down(move_y, 1.0)
+			elif coordinates[1] > detectedObj.coordinate_thresh:
+				await drone.up(move_y, 1.0)
 
 			frame_area = vision.get_box_area()
 
-			# if(get_box_area > detectedObj.initial_frame_area + detectedObj.area_thresh):
-			# 	await drone.backward(5.0, 4.0)
-
-			# elif(get_box_area < detectedObj.initial_frame_area - detectedObj.area_thresh):
-			# 	await drone.forward(5.0, 4.0)
-
-			if cv2.waitKey(25) & 0xFF == ord('q'):
-				break
+			if(frame_area > detectedObj.initial_frame_area + detectedObj.area_thresh):
+				await drone.backward(5.0, 4.0)
+			elif(frame_area < detectedObj.initial_frame_area - detectedObj.area_thresh):
+				await drone.forward(5.0, 4.0)
 
 		
-
+	vision_thread.join()
 	vision.stop_all_detection()
 
 	await drone.land()
