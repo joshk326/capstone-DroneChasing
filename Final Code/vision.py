@@ -12,7 +12,7 @@ class Vision():
 
 	_frame_width = 500
 	_frame_height = 500
-	_detected_center = (0, 0)
+	_detected_center = [0, 0]
 	_x, _y, _w, _h = 0, 0, 0, 0
 	_x_diff = 0
 	_y_diff = 0
@@ -86,7 +86,7 @@ class Vision():
 			
 			cv2.rectangle(frame, (self._x, self._y), (self._x+self._w, self._y+self._h), (0, 255, 0), 2)
 			cv2.putText(frame, "Tracked Object Cords- X: " + str(self._x) + " Y: " + str(self._y), (self._frame_width-200, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-			detected_center = (int(self._x+self._w/2), int(self._y+self._h/2))
+			detected_center = [int(self._x+self._w/2), int(self._y+self._h/2)]
 			self._detected_center = detected_center
 			cv2.circle(frame, detected_center, 5, (255, 0, 0), -1)
 
@@ -107,4 +107,3 @@ class Vision():
 	def stop_all_detection(self):
 		self.cap.release()
 		cv2.destroyAllWindows()
-
